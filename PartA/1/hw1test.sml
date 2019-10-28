@@ -64,10 +64,13 @@ val number_before_reaching_sum1 = number_before_reaching_sum(0, [1, 2, 3]) = 0
 val number_before_reaching_sum2 = number_before_reaching_sum(10, [1,2,3,4,5]) = 3
 
 (* === what_month === *)
-val test9 = what_month 70 = 3
+val test_what_month1 = what_month 70 = 3
+val test_what_month2 = what_month 15 = 1
+val test_what_month3 = what_month 340 = 12
 
 (* === month_range === *)
-val test10 = month_range (31, 34) = [1,2,2,2]
+val test_month_range1 = month_range (20, 20) = [1]
+val test_month_range2 = month_range (31, 34) = [1,2,2,2]
 
 (* === oldest === *)
 val test11 = oldest([(2012,2,28),(2011,3,31),(2011,4,28)]) = SOME (2011,3,31)

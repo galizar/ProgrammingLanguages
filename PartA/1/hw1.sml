@@ -27,7 +27,7 @@ val D4 = (2064, 02, 29) (* leap year *)
 val MONTHS = ["January", "February", "March", "April", "May", "June",
               "July", "August", "September", "October", "November", "December"]
 
-val DAY_MONTH_ENDS = [31, 59, 90, 120, 151, 181, 212, 242, 273, 303, 334] (* FIX THIS SHIT *)
+val MONTH_LENGTHS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
 (* === FUNCTIONS === *)
 
@@ -127,11 +127,22 @@ fun number_before_reaching_sum(sum: int, loi0: int list) =
 
 (* Day -> int *)
 (* returns the month that the given day is in *)
-fun what_month(day: int) = 1
+fun what_month(day: int) =
+  number_before_reaching_sum(day, MONTH_LENGTHS) + 1
 
 (* Day Day -> Month list *)
-(* returns a list of the months each day between day1 and day2 is in *)
-fun month_range(day1: int, day2: int) = [1]
+(* returns a list of the months each day between day1 and day2 is in
+   IMPERATIVE: day1 <= day2 *)
+fun month_range(day1: int, day2: int) =
+  let
+    fun fn_for_int(curr_day: int, last_day: int, months: int list) =
+      if curr_day > last_day
+      then reverse months
+      else
+        fn_for_int(curr_day + 1, last_day, what_month(curr_day) :: months)
+  in
+    fn_for_int(day1, day2, [])
+  end
 
 (* (Day list) -> (int * int * int) option *)
 (* returns a date option of the oldest date in the list or NONE if the list empty*)
