@@ -1,4 +1,4 @@
-use "hw1.sml";
+use "hw1(1).sml"; (* replace with correct file name*)
 (* Homework1 Simple Test *)
 (* These are basic test cases. Passing these tests does not guarantee that your code will pass the actual homework grader *)
 (* To run the test, add a new line to the top of this file: use "homeworkname.sml"; *)
@@ -12,7 +12,6 @@ val test_is_older4 = is_older((2034, 09, 14), (2034, 02, 13)) = false (* d1 is l
 val test_is_older5 = is_older((2077, 02, 06), (2077, 02, 22)) = true (* d1 is earlier cuz day *)
 val test_is_older6 = is_older((2022, 11, 21), (2022, 11, 12)) = false(* d1 is later cuz day *)
 val test_is_older7 = is_older((0001, 02, 03), (0001, 02, 03)) = false (* false cuz same dates *)
-val test_is_older8 = is_older((5, 12, 1), (5, 12, 10)) = true
 
 (* === number_in_month *)
 val test_number_in_month1 = number_in_month([(2012, 2, 28),(2013, 12, 1)], 2) = 1

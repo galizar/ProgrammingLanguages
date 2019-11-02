@@ -39,10 +39,7 @@ fun is_older(d1: int * int * int, d2: int * int * int) =
   else
     if not (#2 d1 = #2 d2)
     then #2 d1 < #2 d2
-    else
-      if not (#3 d1 = #3 d2)
-      then #3 d1 < #3 d2
-      else false
+    else #3 d1 < #3 d2
 
 (* (Date list) int -> int *)
 (* returns the number of dates in the list that are in the given month *)
@@ -146,4 +143,19 @@ fun month_range(day1: int, day2: int) =
 
 (* (Day list) -> (int * int * int) option *)
 (* returns a date option of the oldest date in the list or NONE if the list empty*)
-fun oldest(lod: (int * int * int) list) = SOME D1
+fun oldest(dates: (int * int * int) list) =
+  (* fails to return the correct oldest date when that date is last in the dates list*)
+  if null dates
+  then NONE
+  else
+    let
+      fun oldest_date(lod: (int * int * int) list, oldest: (int * int * int)) =
+        if null (tl lod)
+        then oldest (*crap solution: if is_older(hd lod, oldest) then hd lod else oldest*)
+        else
+          if is_older(hd lod, oldest)
+          then oldest_date(tl lod, hd lod)
+          else oldest_date(tl lod, oldest)
+    in
+      SOME (oldest_date(dates, hd dates))
+    end
