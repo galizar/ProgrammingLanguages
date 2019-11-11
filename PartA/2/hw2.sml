@@ -100,15 +100,66 @@ fun similar_names(candidates: string list list, name: full_name) =
 fun card_color(c: card) =
   case c of
        (Spades, _) => Black
-     | (Clubs, _) => Black | _ => Red
+     | (Clubs, _) => Black
+     | _ => Red
 
-fun card_value(c: card) =
+fun card_value (c: card) =
   case c of
        (_, Num n) => n
      | (_, Ace) => 11
      |  _ => 10
 
-fun remove_card(cs: card list, c: card, e: exn) =
+fun remove_card (cs: card list, c: card, e: exn) =
   case cs of
        [] => raise e
      | fc::cs' => if fc = c then cs' else fc::remove_card(cs', c, e)
+
+fun all_same_color (l: card list) =
+    case l of
+         [] => true
+       | c1::[] => true
+       | c1::c2::cs' =>
+           if card_color(c1) = card_color(c2)
+           then all_same_color(c2::cs')
+           else false
+
+fun sum_cards (l: card list) =
+  let
+    fun fn_for_card_list (x: card list, sum: int) =
+      case x of
+           [] => sum
+         | c1::cs' => fn_for_card_list(cs', sum + card_value(c1))
+  in
+    fn_for_card_list(l, 0)
+  end
+
+fun score (l: card list, goal: int) =
+  let
+    val sum = sum_cards(l)
+    val diff = abs (sum - goal)
+    val preliminary = if sum > goal then 3 * diff else diff
+  in
+    if all_same_color(l) andalso preliminary > 0
+    then preliminary div 2
+    else preliminary
+  end
+
+fun officiate (cards: card list, moves: move list, goal: int) =
+  let
+    fun make_moves (ms: move list, avail: card list, held: card list) =
+      let
+        fun draw_card (next_moves: move list) =
+          case avail of
+               [] => score (held, goal)
+             | c1::cs' => if sum_cards (c1::held) > goal
+                          then score (c1::held, goal)
+                          else make_moves (next_moves, cs', c1::held)
+      in
+        case ms of
+             [] => score (held, goal)
+           | Discard c::ms' => make_moves (ms', avail, remove_card (held, c, IllegalMove))
+           | _::ms' => draw_card (ms')
+      end
+  in
+    make_moves (moves, cards, [])
+  end
