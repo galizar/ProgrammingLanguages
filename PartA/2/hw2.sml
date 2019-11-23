@@ -81,7 +81,9 @@ type full_name = {first: string, middle: string, last: string}
 fun similar_names(candidates: string list list, name: full_name) =
   let
     fun replace_first_with(replacement: string) =
-      {first = replacement, middle = #middle name, last = #last name}
+      case name of
+           {first=_, middle=mname, last=lname} =>
+           {first=replacement, middle=mname, last=lname}
 
     fun fn_for_sl(substitutes: string list, acc: full_name list) =
       case substitutes of
@@ -94,7 +96,9 @@ fun similar_names(candidates: string list list, name: full_name) =
          | sl::slls' => fn_for_sll(slls', fn_for_sl(sl, acc))
 
   in
-    fn_for_sll(get_substitutions2(candidates, #first name), [name])
+    case name of
+         {first=fname, middle=_, last=_} =>
+         fn_for_sll(get_substitutions2(candidates, fname), [name])
   end
 
 fun card_color(c: card) =
@@ -163,3 +167,33 @@ fun officiate (cards: card list, moves: move list, goal: int) =
   in
     make_moves (moves, cards, [])
   end
+
+(*
+fun careful_player(cards: card list, goal: int) =
+  let
+    fun try_replace_for_best_score (c: card, held: card list, moves: move list) =
+      case held of
+           [] => {held=held, moves=moves}
+         | c1::cs' => if c :: remove_card (c1)
+                      then {held = remove_card(held, c1, IllegalMove),
+                            moves = Discard c1 :: moves}
+                      else try_replace_for_best_score(cs', held, moves)
+
+    fun fn_for_cards (cs: card list, held: card list, moves: move list) =
+      let
+        val try = try_replace_for_best_score (cs, held, moves)
+      in
+        if (goal - sum_all_cards(held)) < 11 orelse score (held) = 0
+        then moves
+        else
+          case cs of
+               [] => moves
+             | c1::c2::cs' => if
+             | c1::cs' => if sum_all_cards(c1::held) > goal
+                          then fn_for_cards(cs', held, moves)
+                          else
+      end
+  in
+    fn_for_cards(cards, [], [])
+  end
+*)

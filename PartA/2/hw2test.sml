@@ -97,5 +97,32 @@ val test_officiate3 = ((officiate([(Clubs,Jack),(Spades,Num(8))],
   false)
   handle IllegalMove => true)
 
-val test_officiate4 = officiate([(Diamonds, Ace), (Spades, Num 7), (Clubs, Queen)],
-                                [Draw, Draw, Draw], 15) = 9
+val test_officiate4 = officiate ([(Diamonds, Ace), (Spades, Num 7), (Clubs, Queen)],
+                                 [Draw, Draw, Draw], 15) = 9
+
+(*
+
+(* tests: 1. no more draws after reaching a score of 0
+          2. draw because goal is more than 10 greater than sum of held cards
+          3. no *looking forward* because score is 0
+*)
+val test_careful_player1 = careful_player ([(Diamonds, Num 4), (Spades, Ace), (Clubs, Num 9)], 15)
+                         = [Draw, Draw]
+
+(* tests: 1. don't draw because goal would not be more than 10 greater than sum of held cards *)
+          2. don't discard and draw next because the resulting score would not be 0
+val test_careful_player2 = careful_player ([(Spades, Queen), (Diamonds, Num 7), (Hearts, Num 3)], 21)
+                         = [Draw, Draw]
+
+(* tests: 1. discard and draw next because the resulting score would be 0*)
+          2. don't draw because goal would not be more than 10 greater than sum of held cards
+val test_careful_player3 = careful_player ([(Clubs, Ace), (Hearts, Ace), (Diamonds, Num 7),
+                                            (Spades, Queen)], 21)
+                         = [Draw, Draw, Discard, Draw]
+
+(* test: 1. a goal less than 11 results in no moves at all*)
+val test_careful_player3 = careful_player ([(Clubs, Ace), (Hearts, Ace), (Diamonds, Num 7),
+                                            (Spades, Queen)], 8)
+                         = []
+
+*)
