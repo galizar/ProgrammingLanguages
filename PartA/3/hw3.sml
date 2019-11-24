@@ -105,11 +105,28 @@ fun match (pair: (valu * pattern)) =
   case pair of
        (_, Wildcard) => SOME []
      | (v, Variable name) => SOME [(name, v)]
-     | (v, UnitP) => if v = Unit then SOME [] else NONE
+     | (Unit, UnitP) => SOME []
      | (Const v, ConstP vp) => if v = vp then SOME [] else NONE
-     | (Tuple vs, TupleP ps) =>
-         if check_pat ps
-         then
-           let
-             val paired = zip (vs, ps)
-             val result = foldl (fn (pair, sofar) => (match pair) @ sofar) []
+     | (Tuple vs, TupleP ps) => all_answers match (ListPair.zip (vs, ps))
+     | (Constructor (s1, v), ConstructorP (s2, p)) => if s1 = s2 then match (v, p) else NONE
+     | _ => NONE
+
+fun first_match v prns =
+  SOME (first_answer (fn p => match (v, p)) prns)
+  handle NoAnswer => NONE
+
+(*
+ The first argument contains elements that look like ("foo","bar",IntT), which means constructor foo
+ makes a value of type Datatype "bar" given a value of type IntT.
+*)
+
+
+(* datatype typ = Anything
+                | UnitT
+                | IntT
+                | TupleT of typ list
+                | Datatype of string
+
+*)
+
+(*fun typecheck_patterns (spec: (string * string * typ) list, prns: pattern list) = NONE*)
