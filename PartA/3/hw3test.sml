@@ -92,6 +92,13 @@ val test_match4 = match (Tuple [Const 3, Unit], TupleP [Wildcard, ConstP 3]) = N
 val test_match5 = match (Constructor ("goo", Unit), ConstructorP ("goo", UnitP)) = SOME []
 val test_match7 = match (Constructor ("goo", Const 2), ConstructorP ("goo", UnitP)) = NONE
 val test_match8 = match (Constructor ("goos", Unit), ConstructorP ("goo", UnitP)) = NONE
+val test_match9 = match (Tuple[Const 17,
+                               Unit,
+                               Const 4,
+                               Constructor ("egg",Const 4),
+                               Constructor ("egg", Constructor ("egg",Const 4))],
+                         TupleP[Wildcard,
+                                Wildcard]) = NONE
 
 val test_first_match1 = first_match Unit [UnitP] = SOME []
 val test_first_match2 = first_match (Const 2) [UnitP, ConstP 3] = NONE
@@ -102,10 +109,3 @@ val test_first_match4 = first_match (Tuple [Unit, Const 3, Constructor ("baz", C
                                      UnitP,
                                      TupleP [Variable "goo", Wildcard, Variable "fuge"]]
                       = SOME [("goo", Unit), ("fuge", Constructor ("baz", Const 1))]
-
-(*
-val test_typecheck_patterns1 = typecheck_patterns ([("foo", "baz", IntT)], [TupleP
-                                                   [Variable("x"),Variable("y")]])
-                             = SOME (TupleT [Anything, Anything])
-val test_typecheck_patterns2 = typecheck_patterns ([("foo", "bar", UnitT)], )
- *)
