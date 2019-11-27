@@ -38,7 +38,7 @@ fun all_except_option(s: string, los0: string list) =
            [] => NONE
          | str::strs' =>
              if same_string(str, s)
-             then SOME ( reverse(acc) @ strs' )
+             then SOME ( (reverse acc) @ strs' )
              else fn_for_los(strs', str::acc)
   in
     fn_for_los(los0, [])
@@ -49,29 +49,24 @@ fun get_substitutions1(substitutions: string list list, s: string) =
        [] => []
      | first::rest =>
          let
-           val try = all_except_option(s, first)
            val next = get_substitutions1(rest, s)
          in
-           case try of
+           case all_except_option(s, first) of
                 NONE => next
               | SOME [] => next
-              | SOME first_without_s => first_without_s::next
+              | SOME first_without_s => first_without_s @ next
          end
 
 fun get_substitutions2(substitutions0: string list list, s: string) =
   let
-    fun aux(substitutions: string list list, acc: string list list) =
+    fun aux(substitutions: string list list, acc: string list) =
       case substitutions of
-           [] => reverse acc
+           [] => acc
          | first::rest =>
-             let
-               val try = all_except_option(s, first)
-             in
-               case try of
-                    NONE => aux(rest, acc)
-                  | SOME [] => aux(rest, acc)
-                  | SOME first_without_s => aux(rest, first_without_s::acc)
-              end
+             case all_except_option(s, first) of
+                  NONE => aux(rest, acc)
+                | SOME [] => aux(rest, acc)
+                | SOME first_without_s => aux(rest, acc @ first_without_s)
   in
     aux(substitutions0, [])
   end
@@ -85,20 +80,15 @@ fun similar_names(candidates: string list list, name: full_name) =
            {first=_, middle=mname, last=lname} =>
            {first=replacement, middle=mname, last=lname}
 
-    fun fn_for_sl(substitutes: string list, acc: full_name list) =
-      case substitutes of
-           [] => acc
-         | str::strs' => fn_for_sl(strs', replace_first_with(str) :: acc)
-
-    fun fn_for_sll(substitutions: string list list, acc: full_name list) =
+    fun fn_for_sl(substitutions: string list, acc: full_name list) =
       case substitutions of
-           [] => reverse acc
-         | sl::slls' => fn_for_sll(slls', fn_for_sl(sl, acc))
+           [] => acc
+         | s::sl => fn_for_sl(sl, replace_first_with(s) :: acc)
 
   in
     case name of
          {first=fname, middle=_, last=_} =>
-         fn_for_sll(get_substitutions2(candidates, fname), [name])
+           reverse (fn_for_sl(get_substitutions2(candidates, fname), [name]))
   end
 
 fun card_color(c: card) =
@@ -167,33 +157,3 @@ fun officiate (cards: card list, moves: move list, goal: int) =
   in
     make_moves (moves, cards, [])
   end
-
-(*
-fun careful_player(cards: card list, goal: int) =
-  let
-    fun try_replace_for_best_score (c: card, held: card list, moves: move list) =
-      case held of
-           [] => {held=held, moves=moves}
-         | c1::cs' => if c :: remove_card (c1)
-                      then {held = remove_card(held, c1, IllegalMove),
-                            moves = Discard c1 :: moves}
-                      else try_replace_for_best_score(cs', held, moves)
-
-    fun fn_for_cards (cs: card list, held: card list, moves: move list) =
-      let
-        val try = try_replace_for_best_score (cs, held, moves)
-      in
-        if (goal - sum_all_cards(held)) < 11 orelse score (held) = 0
-        then moves
-        else
-          case cs of
-               [] => moves
-             | c1::c2::cs' => if
-             | c1::cs' => if sum_all_cards(c1::held) > goal
-                          then fn_for_cards(cs', held, moves)
-                          else
-      end
-  in
-    fn_for_cards(cards, [], [])
-  end
-*)
