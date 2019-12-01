@@ -55,20 +55,15 @@ val longest_capitalized = longest_string3 o only_capitals
 
 val rev_string = String.implode o rev o String.explode
 
-fun first_answer f l =
-  case l of
-       [] => raise NoAnswer
-     | first::rest => case f first of
-                           NONE => first_answer f rest
-                         | SOME v => v
+fun first_answer f [] = raise NoAnswer
+  | first_answer f (first::rest) = case f first of
+                                        NONE => first_answer f rest
+                                      | SOME v => v
 
 fun all_answers f l0 =
   let
-    fun aux l acc =
-      case l of
-           [] => SOME (rev acc)
-         | first::rest =>
-             case f first of
+    fun aux [] acc = SOME (rev acc)
+      | aux (first::rest) acc = case f first of
                   NONE => NONE
                 | SOME v => aux (rest) (v @ acc)
   in
@@ -91,12 +86,11 @@ fun check_pat p0 =
          | TupleP ps => foldl (fn (prn, sofar) => sofar @ (all_vnames (prn, []))) [] ps
          | _ => acc
 
-     fun any_dups (strs: string list)  =
-       case strs of
-            [] => false
-          | s::ss' => if List.exists (fn x => x = s) ss'
-                      then true
-                      else any_dups (ss')
+
+     fun any_dups [] = false
+       | any_dups (s::ss') = if List.exists (fn x => x = s) ss'
+                             then true
+                             else any_dups (ss')
   in
     not (any_dups (all_vnames (p0, [])))
   end
