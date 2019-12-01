@@ -64,8 +64,8 @@ fun all_answers f l0 =
   let
     fun aux [] acc = SOME (rev acc)
       | aux (first::rest) acc = case f first of
-                  NONE => NONE
-                | SOME v => aux (rest) (v @ acc)
+                                     NONE => NONE
+                                   | SOME v => aux (rest) (v @ acc)
   in
     aux l0 []
   end
