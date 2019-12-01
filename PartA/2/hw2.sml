@@ -4,8 +4,6 @@
 fun same_string(s1 : string, s2 : string) =
     s1 = s2
 
-(* put your solutions for problem 1 here *)
-
 (* you may assume that Num is always used with values 2, 3, ..., 10
    though it will not really come up *)
 datatype suit = Clubs | Diamonds | Hearts | Spades
@@ -113,9 +111,7 @@ fun all_same_color (l: card list) =
          [] => true
        | c1::[] => true
        | c1::c2::cs' =>
-           if card_color(c1) = card_color(c2)
-           then all_same_color(c2::cs')
-           else false
+           card_color(c1) = card_color(c2) andalso all_same_color(c2::cs')
 
 fun sum_cards (l: card list) =
   let
