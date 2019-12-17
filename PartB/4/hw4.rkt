@@ -42,3 +42,21 @@
                       (cons (- x) next)
                       (cons     x next))))])
     (f 1)))
+
+(define (dan-then-dog)
+  (letrec ([f (λ (b)
+                (let ([next (λ () (f (not b)))])
+                  (if b
+                      (cons "dan.jpg" next)
+                      (cons "dog.jpg" next))))])
+    (f true)))
+
+(define (stream-add-zero s)
+  (letrec ([f (λ (stream)
+                (let* ([eval-strm (stream)]
+                       [next (λ () (f (cdr eval-strm)))])
+                  (λ () (cons (cons 0 (car eval-strm))
+                              (next)))))])
+    (f s)))
+
+(define (cycle-lists xs ys) (cons "test" (λ () "test")))
