@@ -59,4 +59,27 @@
                               (next)))))])
     (f s)))
 
-(define (cycle-lists xs ys) (cons "test" (λ () "test")))
+;; -- P8 -- 
+
+;; IMPERATIVE: l is a non-empty list
+(define (mobius-list l)
+  (letrec ([fn-for-list (λ (alist)
+                          (cond [(empty? alist) (fn-for-list l)]
+                                [else
+                                 (cons (first alist)
+                                       (λ () (fn-for-list (rest alist))))]))])
+    (fn-for-list l)))
+
+(define (zip-stream-pair s1 s2)
+  (letrec ([fn-for-strmpair (λ (strm1 strm2)
+                              (let* ([strm-eval1 (strm1)]
+                                     [strm-eval2 (strm2)])
+                                (λ () (cons (cons (car strm-eval1) (car strm-eval2))
+                                            (fn-for-strmpair (cdr strm-eval1) (cdr strm-eval2))))))])
+    (fn-for-strmpair s1 s2)))
+
+;; IMPERATIVE: xs and ys are non-empty lists
+(define (cycle-lists xs ys)
+  (zip-stream-pair
+   (λ () (mobius-list xs))
+   (λ () (mobius-list ys))))

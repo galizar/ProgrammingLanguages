@@ -51,11 +51,30 @@
    (check-equal? (stream-for-n-steps (stream-add-zero dan-then-dog) 2)
                  (list (cons 0 "dan.jpg") (cons 0 "dog.jpg"))
                  "stream-add-zero test 1")
+
+   ;; -- P8 --
+   ; mobius-list tests
+   (check-equal? (stream-for-n-steps (λ () (mobius-list (list 1 2 3))) 4)
+                 (list 1 2 3 1))
+   (check-equal? (stream-for-n-steps (λ () (mobius-list (list 1 2 3))) 6)
+                 (list 1 2 3 1 2 3))
+
+   ; zip-stream-pair tests
+   (check-equal? (stream-for-n-steps (zip-stream-pair ones ones) 3)
+                 (list (cons 1 1) (cons 1 1) (cons 1 1)))
+
+   (check-equal? (stream-for-n-steps (zip-stream-pair
+                                      (λ () (mobius-list (list 1 2 3)))
+                                      (λ () (mobius-list (list 3 2 1))))
+                                     6)
+                 (list (cons 1 3) (cons 2 2) (cons 3 1) (cons 1 3) (cons 2 2) (cons 3 1)))
    
    ; cycle-lists test
    (check-equal? (stream-for-n-steps (cycle-lists (list 1 2 3) (list "a" "b")) 3) (list (cons 1 "a") (cons 2 "b") (cons 3 "a")) 
                  "cycle-lists test")
-;   
+   (check-equal? (stream-for-n-steps (cycle-lists  (list 1 2 3) (list "a" "b" "c")) 6)
+                 (list (cons 1 "a") (cons 2 "b") (cons 3 "c") (cons 1 "a") (cons 2 "b") (cons 3 "c")))
+
 ;   ; vector-assoc test
 ;   (check-equal? (vector-assoc 4 (vector (cons 2 1) (cons 3 1) (cons 4 1) (cons 5 1))) (cons 4 1) "vector-assoc test")
 ;   
