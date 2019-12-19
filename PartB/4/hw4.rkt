@@ -53,10 +53,9 @@
 
 (define (stream-add-zero s)
   (letrec ([f (λ (stream)
-                (let* ([eval-strm (stream)]
-                       [next (λ () (f (cdr eval-strm)))])
+                (let* ([eval-strm (stream)])
                   (λ () (cons (cons 0 (car eval-strm))
-                              (next)))))])
+                              (f (cdr eval-strm))))))])
     (f s)))
 
 ;; -- P8 -- 
@@ -72,8 +71,8 @@
 
 (define (zip-stream-pair s1 s2)
   (letrec ([fn-for-strmpair (λ (strm1 strm2)
-                              (let* ([strm-eval1 (strm1)]
-                                     [strm-eval2 (strm2)])
+                              (let ([strm-eval1 (strm1)]
+                                    [strm-eval2 (strm2)])
                                 (λ () (cons (cons (car strm-eval1) (car strm-eval2))
                                             (fn-for-strmpair (cdr strm-eval1) (cdr strm-eval2))))))])
     (fn-for-strmpair s1 s2)))
@@ -83,3 +82,18 @@
   (zip-stream-pair
    (λ () (mobius-list xs))
    (λ () (mobius-list ys))))
+
+;; -- P9 --
+(define (vector-assoc v vec)
+  (letrec ([iterator (λ (idx-seq)
+                       (cond [(empty? idx-seq) false]
+                             [else
+                              (let ([curr (vector-ref vec (first idx-seq))])
+                                (if (and (pair? curr) (equal? (car curr) v))
+                                    curr
+                                    (iterator (rest idx-seq))))]))])
+    (iterator (sequence 0 (sub1 (vector-length vec)) 1))))
+
+;; -- P10 --
+(define (cached-assoc xs n) (λ (v)
+                              ()))

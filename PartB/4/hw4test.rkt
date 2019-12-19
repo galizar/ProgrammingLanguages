@@ -75,9 +75,11 @@
    (check-equal? (stream-for-n-steps (cycle-lists  (list 1 2 3) (list "a" "b" "c")) 6)
                  (list (cons 1 "a") (cons 2 "b") (cons 3 "c") (cons 1 "a") (cons 2 "b") (cons 3 "c")))
 
-;   ; vector-assoc test
-;   (check-equal? (vector-assoc 4 (vector (cons 2 1) (cons 3 1) (cons 4 1) (cons 5 1))) (cons 4 1) "vector-assoc test")
-;   
+;; -- P9 --
+   ; vector-assoc test
+   (check-equal? (vector-assoc "hello" (vector (cons 1 2) (cons "lorem" "ipsum") 5)) false)
+   (check-equal? (vector-assoc 4 (vector (cons 2 1) (cons 3 1) (cons 4 1) (cons 5 1))) (cons 4 1) "vector-assoc test")
+   
 ;   ; cached-assoc tests
 ;   (check-equal? ((cached-assoc (list (cons 1 2) (cons 3 4)) 3) 3) (cons 3 4) "cached-assoc test")
 ;   
