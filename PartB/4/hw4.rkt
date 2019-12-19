@@ -95,5 +95,18 @@
     (iterator (sequence 0 (sub1 (vector-length vec)) 1))))
 
 ;; -- P10 --
-(define (cached-assoc xs n) (λ (v)
-                              ()))
+(define (cached-assoc xs n)
+  (letrec ([cache (make-vector n false)]
+           [fill-pos 0]
+           [cache-and-return (λ (pr)
+                               (begin (vector-set! cache fill-pos pr)
+                                      (set! fill-pos (if (= fill-pos (sub1 n)) 0 (add1 fill-pos)))
+                                      pr))]
+           [cassoc (λ (v)
+                     (let ([cached (vector-assoc v cache)])
+                       (cond [(not (false? cached)) cached]
+                             [else
+                              (let ([item (assoc v xs)])
+                                (cond [(not (false? item)) (cache-and-return item)]
+                                      [else false]))])))])
+    cassoc))
