@@ -114,33 +114,35 @@
         
 ;; Problem 3
 
-(define (ifaunit e1 e2 e3) (if (aunit? e1) e2 e3))
+(define (ifaunit e1 e2 e3) (ifgreater (isaunit e1) (int 0) e2 e3))
 
 (define (mlet* lstlst e2)
-  (letrec ([fn-for-lst (λ (alist acc-env)
-                         (cond [(empty? alist) (eval-under-env e2 acc-env)]
-                               [else (fn-for-lst (rest alist)
-                                                 (cons (cons (car (first alist))
-                                                             (eval-under-env (cdr (first alist)) acc-env))
-                                                       acc-env))]))])
-    (fn-for-lst lstlst empty)))
+  (cond [(empty? lstlst) e2]
+        [else
+         (let ([head (first lstlst)]
+               [tail (rest lstlst)])
+           (mlet (car head) (cdr head)
+                 (mlet* tail e2)))]))
 
 (define (ifeq e1 e2 e3 e4)
-  (if (and (int? e1) (int? e2) (= (int-num e1) (int-num e2)))
-      e3
-      e4))
+  (mlet* (list (cons "_x" e1) (cons "_y" e2))
+         (ifgreater (var "_x") (var "_y")
+                    e4
+                    (ifgreater (var "_y") (var "_x") e4 e3))))
 
 ;; Problem 4
 
 (define mupl-map
-  (fun #f "func" (fun "mmap" "lst" (ifgreater (isaunit (var "lst")) (int 0)
-                                             (aunit)
-                                             (apair (call (var "func") (fst (var "lst")))
-                                                    (call (var "mmap") (snd (var "lst"))))))))
+  (fun #f "func" (fun "mmap" "lst" (ifaunit (var "lst")
+                                            (aunit)
+                                            (apair (call (var "func") (fst (var "lst")))
+                                                   (call (var "mmap") (snd (var "lst"))))))))
          
 (define mupl-mapAddN 
   (mlet "map" mupl-map
-        (fun #f "n" (fun #f "alst" (call (call (var "map") (fun #f "x" (add (var "x") (var "n")))) (var "alst"))))))
+        (fun #f "n" (fun #f "alst" (call (call (var "map")
+                                               (fun #f "x" (add (var "x") (var "n"))))
+                                         (var "alst"))))))
 
 ;;; Challenge Problem
 ;

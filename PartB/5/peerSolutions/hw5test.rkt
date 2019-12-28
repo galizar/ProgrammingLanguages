@@ -5,7 +5,7 @@
 
 ;; Be sure to put your homework file in the same folder as this test file.
 ;; Uncomment the line below and, if necessary, change the filename
-(require "hw5.rkt")
+(require "hw5_2.rkt")
 
 (require rackunit)
 
@@ -17,9 +17,9 @@
    ;; -- a --
 
    ;; test reverse-apair
-   (check-equal? (reverse-apair (aunit)) (aunit))
-   (check-equal? (reverse-apair (apair (int 1) (apair (int 2) (apair (int 3) (aunit)))))
-                 (apair (int 3) (apair (int 2) (apair (int 1) (aunit)))))
+;   (check-equal? (reverse-apair (aunit)) (aunit))
+;   (check-equal? (reverse-apair (apair (int 1) (apair (int 2) (apair (int 3) (aunit)))))
+;                 (apair (int 3) (apair (int 2) (apair (int 1) (aunit)))))
    
    ;; check racketlist to mupllist with normal list
    (check-equal? (racketlist->mupllist empty) (aunit))
@@ -34,7 +34,7 @@
    ;; -- Problem 2 --
    ;; tests if ifgreater returns (int 2)
    (check-equal? (eval-exp (ifgreater (int 3) (int 4) (int 3) (int 2))) (int 2) "ifgreater test")
-   (check-equal? (eval-exp (ifgreater (int 2) (aunit) (int 1) (int 4))) (int 4) "ifgreater test one exp does not eval to (int)")
+;   (check-equal? (eval-exp (ifgreater (int 2) (aunit) (int 1) (int 4))) (int 4) "ifgreater test one exp does not eval to (int)")
    ;; mlet & add test
    (check-equal? (eval-exp (mlet "x" (int 1) (add (int 5) (var "x")))) (int 6) "mlet & add test")
    ;; var test
@@ -65,7 +65,7 @@
    
    ;; ifeq test
    (check-equal? (eval-exp (ifeq (int 1) (int 2) (int 3) (int 4))) (int 4) "ifeq test")
-   ;;(check-equal? (eval-exp (ifeq (int 2) (aunit) (aunit) (int 55))) (int 55))
+   (check-equal? (eval-exp (ifeq (int 2) (aunit) (aunit) (int 55))) (int 55))
    (check-equal? (eval-exp (ifeq (int 2) (int 2) (add (int 2) (int 2)) (aunit))) (int 4))
    
    ;; mupl-map test
