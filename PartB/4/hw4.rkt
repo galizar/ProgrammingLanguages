@@ -15,17 +15,22 @@
 (define (string-append-map xs suffix)
   (map (λ (s) (string-append s suffix)) xs))
 
+;(define (list-nth-mod xs n)
+;  (if (> 0 n)
+;      (error "list-nth-mod: negative number")
+;      (letrec ([fn-for-lst (λ (lst curr-idx)
+;                             (cond [(empty? lst) (error "list-nth-mod: empty list")]
+;                                   [else
+;                                    (let ([objective-idx (modulo n (length xs))])
+;                                      (if (= curr-idx objective-idx)
+;                                          (first lst)
+;                                          (fn-for-lst (rest lst) (add1 curr-idx))))]))])
+;        (fn-for-lst xs 0))))
+
 (define (list-nth-mod xs n)
-  (if (> 0 n)
-      (error "list-nth-mod: negative number")
-      (letrec ([fn-for-lst (λ (lst curr-idx)
-                             (cond [(empty? lst) (error "list-nth-mod: empty list")]
-                                   [else
-                                    (let ([objective-idx (modulo n (length xs))])
-                                      (if (= curr-idx objective-idx)
-                                          (first lst)
-                                          (fn-for-lst (rest lst) (add1 curr-idx))))]))])
-        (fn-for-lst xs 0))))
+  (cond [(> 0 n) (error "list-nth-mod: negative number")]
+        [(empty? xs) (error "list-nth-mod: empty list")]
+        [else (list-ref xs (modulo n (length xs)))]))
 
 (define (stream-for-n-steps s n)
   (letrec ([fn-for-stream (λ (stream acc steps-taken)
@@ -53,7 +58,7 @@
 
 (define (stream-add-zero s)
   (letrec ([f (λ (stream)
-                (let* ([eval-strm (stream)])
+                (let ([eval-strm (stream)])
                   (λ () (cons (cons 0 (car eval-strm))
                               (f (cdr eval-strm))))))])
     (f s)))

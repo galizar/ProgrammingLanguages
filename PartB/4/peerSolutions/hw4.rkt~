@@ -1,0 +1,86 @@
+
+#lang racket
+
+(provide (all-defined-out)) ;; so we can put tests in a second file
+
+;; put your code below
+
+(define (sequence low high stride)
+  (if (> low high)
+      empty
+      (cons low (sequence (+ low stride) high stride))))
+
+(define (string-append-map xs suffix)
+  (map (lambda(i) (string-append i suffix)) xs))
+
+(define (list-nth-mod xs n)
+  (cond [(< n 0) (error "list-nth-mod: negative number")]
+        [(empty? xs) (error "list-nth-mod: empty list")]
+        [(car (list-tail xs (+ (remainder (length xs) n) 1)))]))
+
+(define (stream-for-n-steps s n)
+  (if (= n 0)
+      empty
+      (cons (car (s)) (stream-for-n-steps (cdr (s)) (- n 1)))))
+
+(define funny-number-stream
+  (letrec ([f (lambda (x)
+                (if (= (remainder x 5) 0)
+                    (cons (- 0 x) (lambda() (f (+ x 1))))
+                    (cons x (lambda() (f (+ x 1))))))])
+    (lambda () (f 1))))
+
+(define dan-then-dog
+  (letrec ([f (lambda (x)
+                (if (= (remainder x 2) 0)
+                    (cons "dog.jpg" (lambda () (f (+ x 1))))
+                    (cons "dan.jpg" (lambda () (f (+ x 1))))))])
+    (lambda () (f 1))))
+
+(define (stream-add-zero s)
+  (letrec ([f (lambda ()
+                (cons (cons 0 (car (s))) (cdr (s))))])
+    (lambda () (f))))
+
+(define (cycle-lists xs ys)
+  (letrec ([f (lambda (x)
+                (let ([xi (remainder x (length xs))]
+                      [yi (remainder x (length ys))])
+                  (cons (cons (list-ref xs xi) (list-ref ys yi)) (lambda() (f (+ x 1))))))])
+    (lambda () (f 0))))
+
+(define (vector-assoc v vec)
+  (letrec ([f (lambda (x)
+                (cond [(= x (vector-length vec)) #f]
+                      [(let ([p (vector-ref vec x)])
+                         (if (equal? v (car p))
+                             p
+                             (f (+ x 1))))]))])
+    (f 0)))
+
+(define (cached-assoc xs n)
+  (letrec ([cache (make-vector n (cons #f #f))]
+           [index 0]
+           [f (lambda (x)
+                (let ([hit (vector-assoc x cache)])
+                  (cond [(void? hit)
+                         (let ([p (assoc x xs)])
+                           (cond [p
+                                  (vector-set! cache index p)
+                                  (set! index (remainder (+ index 1) n))
+                                  p]
+                                 [#f]))]
+                        [hit])))])
+    (lambda (x) (f x))))
+
+(define-syntax while-less
+  (syntax-rules (do)
+    [(while-less e1 do e2)
+     (letrec ([thr e1]
+              [ret 0]
+              [f (lambda ()
+                   (set! ret e2)
+                   (if (> ret thr)
+                       #t
+                       (f)))])
+       (f))]))
