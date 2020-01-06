@@ -9,6 +9,10 @@ class MyPiece < Piece
     MyPiece.new(All_My_Pieces.sample, board)
   end
 
+  def self.cheat_piece(board)
+    MyPiece.new([[0, 0]], board)
+  end
+
   All_My_Pieces = [[[[0, 0], [1, 0], [0, 1], [1, 1]]],  # square (only needs one)
                 rotations([[0, 0], [-1, 0], [1, 0], [0, -1]]), # T
                 [[[0, 0], [-1, 0], [1, 0], [2, 0]], # long (only needs two)
@@ -39,7 +43,7 @@ class MyBoard < Board
     if !@cheat_round
       @current_block = MyPiece.next_piece(self)
     else
-      @current_block = MyPiece.new([[0, 0]], self)
+      @current_block = MyPiece.cheat_piece(self)
       @cheat_round = false
     end
 
